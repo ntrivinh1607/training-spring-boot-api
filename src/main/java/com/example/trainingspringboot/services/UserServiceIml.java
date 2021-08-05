@@ -2,8 +2,10 @@ package com.example.trainingspringboot.services;
 
 import com.example.trainingspringboot.entities.Role;
 import com.example.trainingspringboot.entities.User;
-import com.example.trainingspringboot.jwt.JwtResponse;
+import com.example.trainingspringboot.model.request.UserCreatingUpdatingRequest;
+import com.example.trainingspringboot.model.response.JwtResponse;
 import com.example.trainingspringboot.jwt.JwtUtils;
+import com.example.trainingspringboot.model.response.UserResponse;
 import com.example.trainingspringboot.repositories.RoleRepository;
 import com.example.trainingspringboot.repositories.UserRepository;
 import com.example.trainingspringboot.userDetail.MyUserPrincipal;
@@ -21,6 +23,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class UserServiceIml implements UserService {
@@ -36,18 +39,25 @@ public class UserServiceIml implements UserService {
     JwtUtils jwtUtils;
 
     @Override
-    public List<User> getListUser() {
-        return repo.findAll();
+    public List<UserResponse> getListUser() {
+        return repo.findAll().stream().map(user-> new UserResponse(user)).collect(Collectors.toList());
     }
 
     @Override
-    public User createUser(User user) {
+    public UserResponse createUser(UserCreatingUpdatingRequest userCreatingRequest)
+    {
         try{
-            System.out.println(user.getRole());
-            Role role = roleRepo.findById(user.getRole().getId()).get();
-            user.setRole(role);
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            return repo.save(user);
+            User newUser = new User();
+            newUser.setUsername(userCreatingRequest.getUsername());
+            if(userCreatingRequest.getRole() != null && !userCreatingRequest.getRole().equals(""))
+            {
+                newUser.setRole(roleRepo.getRoleByName(userCreatingRequest.getRole()));
+            } else {
+                newUser.setRole(roleRepo.getRoleByName("STUDENT"));
+            }
+            newUser.setPassword(passwordEncoder.encode(userCreatingRequest.getPassword()));
+            repo.save(newUser);
+            return new UserResponse(newUser);
         }
         catch (Exception exc) {
             //throw new ResponseStatusException(HttpStatus.CONFLICT, "User conflict", exc);
@@ -67,27 +77,20 @@ public class UserServiceIml implements UserService {
     }
 
     @Override
-    public User getUserById(int id) {
-        return repo.getById(id);
-    }
-
-    @Override
-    public User updateUser(User user, int id) {
+    public UserResponse updateUser(UserCreatingUpdatingRequest userUpdatingRequest, Integer id) {
         try{
-            Optional<User> userById = repo.findById(id);
-            if(userById.isPresent()){
-                User oldUser = getUserById(id);
-                user.setId(id);
-                if(user.getPassword() == null)
-                {
-                    user.setPassword(oldUser.getPassword());
-                } else {
-                    user.setPassword(passwordEncoder.encode(user.getPassword()));
-                }
-                user.setUpdatedDate(LocalDate.now(ZoneId.of("GMT+07:00")));
-                return repo.save(user);
+            User oldUser = repo.getById(id);
+            if(userUpdatingRequest.getPassword() != null && !userUpdatingRequest.getPassword().equals(""))
+            {
+                oldUser.setPassword(passwordEncoder.encode(userUpdatingRequest.getPassword()));
             }
-            throw new Exception();
+            if(userUpdatingRequest.getUsername() != null && !userUpdatingRequest.getUsername().equals(""))
+            {
+                oldUser.setUsername(userUpdatingRequest.getUsername());
+            }
+            oldUser.setUpdatedDate(LocalDate.now(ZoneId.of("GMT+07:00")));
+            repo.save(oldUser);
+            return new UserResponse(oldUser);
         } catch (Exception exc) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found", exc);
         }
@@ -107,6 +110,6 @@ public class UserServiceIml implements UserService {
         return new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
-                role.getId());
+                role.getName());
     }
 }

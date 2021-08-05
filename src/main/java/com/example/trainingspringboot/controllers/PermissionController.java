@@ -2,6 +2,7 @@ package com.example.trainingspringboot.controllers;
 
 
 import com.example.trainingspringboot.entities.Permission;
+import com.example.trainingspringboot.model.request.PermissionCreatingUpdatingRequest;
 import com.example.trainingspringboot.services.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/permission")
+@RequestMapping("/api/permissions")
 public class PermissionController {
     @Autowired
     private PermissionService permissionService;
@@ -27,17 +28,17 @@ public class PermissionController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createPermission(@RequestBody Permission permission) {
-        return ResponseEntity.ok(permissionService.savePermission(permission));
+    public ResponseEntity<?> createPermission(@RequestBody PermissionCreatingUpdatingRequest permission) {
+        return ResponseEntity.ok(permissionService.createPermission(permission));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePermission(@RequestBody Permission permission, @PathVariable int id) {
-        return ResponseEntity.ok(permissionService.updatePermission(permission, id));
+    public ResponseEntity<?> updatePermission(@RequestBody PermissionCreatingUpdatingRequest permissionReq, @PathVariable Integer id) {
+        return ResponseEntity.ok(permissionService.updatePermission(permissionReq, id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePermission(@PathVariable int id) {
+    public ResponseEntity<?> deletePermission(@PathVariable Integer id) {
         permissionService.deletePermission(id);
         return ResponseEntity.ok("Delete Success");
     }

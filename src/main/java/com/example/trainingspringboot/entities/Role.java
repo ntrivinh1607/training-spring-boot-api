@@ -13,17 +13,24 @@ import java.util.Collection;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "role")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
-    @Column(unique = true, nullable = false)
+
+    @Column(unique = true, nullable = false, name = "name")
     private String name;
 
     @OneToMany(mappedBy = "role")
     @JsonManagedReference
     private Collection<User> users = new ArrayList<>();
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-    private Collection<RolePermission> rolePermissions = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "role_permission",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Collection<Permission> mappedPermission = new ArrayList<>();
 }

@@ -1,15 +1,14 @@
 package com.example.trainingspringboot.controllers;
 
 import com.example.trainingspringboot.entities.User;
+import com.example.trainingspringboot.model.request.UserCreatingUpdatingRequest;
 import com.example.trainingspringboot.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -17,7 +16,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/user")
+    @GetMapping("/users")
     public ResponseEntity<?> getUser() {
         try{
             return ResponseEntity.ok(userService.getListUser());
@@ -28,8 +27,8 @@ public class UserController {
     }
 
     @PostMapping("/auth/signup")
-    public ResponseEntity<?> createUser(@RequestBody User user) {
-        return ResponseEntity.ok(userService.createUser(user));
+    public ResponseEntity<?> createUser(@RequestBody UserCreatingUpdatingRequest userCreatingRequest) {
+        return ResponseEntity.ok(userService.createUser(userCreatingRequest));
     }
 
     @PostMapping("/auth/signin")
@@ -37,12 +36,12 @@ public class UserController {
         return ResponseEntity.ok(userService.userLogin(user));
     }
 
-    @PutMapping("/user/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable int id) {
+    @PutMapping("/users/{id}")
+    public ResponseEntity<?> updateUser(@RequestBody UserCreatingUpdatingRequest user, @PathVariable Integer id) {
         return ResponseEntity.ok(userService.updateUser(user, id));
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable int id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("Delete Success");

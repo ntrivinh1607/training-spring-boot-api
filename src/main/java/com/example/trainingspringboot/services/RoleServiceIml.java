@@ -2,10 +2,10 @@ package com.example.trainingspringboot.services;
 
 import com.example.trainingspringboot.entities.Permission;
 import com.example.trainingspringboot.entities.Role;
-import com.example.trainingspringboot.entities.RolePermission;
-import com.example.trainingspringboot.entities.User;
+import com.example.trainingspringboot.model.request.RoleCreatingUpdatingRequest;
+import com.example.trainingspringboot.model.response.RoleResponse;
+import com.example.trainingspringboot.model.response.UserResponse;
 import com.example.trainingspringboot.repositories.PermissionRepository;
-import com.example.trainingspringboot.repositories.RolePermissionRepository;
 import com.example.trainingspringboot.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,12 +21,11 @@ public class RoleServiceIml implements RoleService {
     private RoleRepository repo;
     @Autowired
     private PermissionRepository perRepo;
-    @Autowired
-    private RolePermissionRepository ropeRepo;
+
     @Override
-    public List<Role> getListRole() {
+    public List<RoleResponse> getListRole() {
         try{
-            return repo.findAll();
+            return repo.findAll().stream().map(role-> new RoleResponse(role)).collect(Collectors.toList());
         }catch(Exception exc)
         {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found roles", exc);
@@ -34,46 +33,40 @@ public class RoleServiceIml implements RoleService {
     }
 
     @Override
-    public Role saveRole(Role role) {
+    public RoleResponse createRole(RoleCreatingUpdatingRequest roleCreatingUpdatingRequest) {
         try{
             Role newRole = new Role();
-            newRole.setName(role.getName());
-            newRole.getRolePermissions().addAll((role.getRolePermissions()
-                    .stream()
-                    .map(rolePermission -> {
-                        Permission per = perRepo.findById(rolePermission.getPermission().getId()).get();
-                        RolePermission newRoPe = new RolePermission();
-                        newRoPe.setPermission(per);
-                        newRoPe.setRole(newRole);
-                        return newRoPe;
-                    })
-                    .collect(Collectors.toList())
-            ));
-            return repo.save(newRole);
+            newRole.setName(roleCreatingUpdatingRequest.getName());
+            newRole.setMappedPermission(roleCreatingUpdatingRequest.getPermissions().stream().map(permission ->{
+                return perRepo.findById(permission).get();
+            }).collect(Collectors.toList()));
+            repo.save(newRole);
+            return new RoleResponse(newRole);
         }
         catch (NullPointerException exc) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "onflict Role name", exc);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Conflict Role name", exc);
         }
     }
 
     @Override
-    public Role updateRole(Role role, Integer id) {
+    public RoleResponse updateRole(RoleCreatingUpdatingRequest roleCreatingUpdatingRequest, Integer id) {
         try{
-            Role oldRole = repo.findById(id).get();
-            oldRole.setName(role.getName());
-            if(role.getRolePermissions().size() != 0)   ropeRepo.deleteByRoleId(id);
-            oldRole.setRolePermissions(role.getRolePermissions().stream().map(rolePermission -> {
-                Permission per = perRepo.findById(rolePermission.getPermission().getId()).get();
-                RolePermission newRoPe = new RolePermission();
-                newRoPe.setPermission(per);
-                newRoPe.setRole(oldRole);
-                return newRoPe;
-            }).collect(Collectors.toList()));
-            return repo.saveAndFlush(oldRole);
+            Role newRole = repo.getById(id);
+
+            if(roleCreatingUpdatingRequest.getName() != null && !roleCreatingUpdatingRequest.getName().equals(""))
+            {
+                newRole.setName(roleCreatingUpdatingRequest.getName());
+            }
+            if(roleCreatingUpdatingRequest.getPermissions() != null)
+            {
+                newRole.setMappedPermission(roleCreatingUpdatingRequest.getPermissions().stream().map(permission ->
+                        perRepo.findById(permission).get()).collect(Collectors.toList()));
+            }
+            repo.save(newRole);
+            return new RoleResponse(newRole);
         }
         catch (Exception exc) {
-            // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found", exc);
-            throw exc;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found", exc);
         }
     }
 

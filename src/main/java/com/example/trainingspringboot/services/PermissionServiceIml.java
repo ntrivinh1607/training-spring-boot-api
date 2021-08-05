@@ -1,6 +1,9 @@
 package com.example.trainingspringboot.services;
 
 import com.example.trainingspringboot.entities.Permission;
+import com.example.trainingspringboot.model.request.PermissionCreatingUpdatingRequest;
+import com.example.trainingspringboot.model.response.PermissionResponse;
+import com.example.trainingspringboot.model.response.RoleResponse;
 import com.example.trainingspringboot.repositories.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class PermissionServiceIml implements PermissionService {
@@ -15,9 +19,9 @@ public class PermissionServiceIml implements PermissionService {
     private PermissionRepository repo;
 
     @Override
-    public List<Permission> getListPermission() {
+    public List<PermissionResponse> getListPermission() {
         try{
-            return repo.findAll();
+            return repo.findAll().stream().map(permission-> new PermissionResponse(permission)).collect(Collectors.toList());
         }catch(Exception exc)
         {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found Permissions", exc);
@@ -25,9 +29,12 @@ public class PermissionServiceIml implements PermissionService {
     }
 
     @Override
-    public Permission savePermission(Permission permission) {
+    public PermissionResponse createPermission(PermissionCreatingUpdatingRequest permissionReq) {
         try{
-            return repo.save(permission);
+            Permission newPermission = new Permission();
+            newPermission.setName(permissionReq.getName());
+            repo.save(newPermission);
+            return new PermissionResponse(newPermission);
         }
         catch (Exception exc) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Permission conflict", exc);
@@ -45,24 +52,17 @@ public class PermissionServiceIml implements PermissionService {
     }
 
     @Override
-    public Permission getPermissionById(Integer id) {
+    public PermissionResponse updatePermission(PermissionCreatingUpdatingRequest permissionReq, Integer id) {
         try{
-            return repo.getById(id);
+            Permission newPermission = repo.getById(id);
+            if(!permissionReq.getName().equals("") && permissionReq.getName()!=null){
+                newPermission.setName(permissionReq.getName());
+            }
+            repo.save(newPermission);
+            return new PermissionResponse(newPermission);
         }
         catch (Exception exc) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Permission not found", exc);
-        }
-    }
-
-    @Override
-    public Permission updatePermission(Permission permission, Integer id) {
-        try{
-            Permission newPms = new Permission();
-            newPms.setId(id);
-            return repo.save(permission);
-        }
-        catch (Exception exc) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Permission not found", exc);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Permission not found or map with role", exc);
         }
     }
 }

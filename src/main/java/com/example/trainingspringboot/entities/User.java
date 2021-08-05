@@ -16,18 +16,20 @@ import java.time.ZoneId;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue
+    @Column(unique = true, nullable = false, name = "id")
     private Integer id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, name = "username")
     private String username;
-    @Column(nullable = false)
+    @Column(nullable = false, name = "password")
     private String password;
-    @Column(name = "createddate", nullable = false)
+    @Column(name = "created_date", nullable = false)
     private LocalDate createdDate = LocalDate.now(ZoneId.of("GMT+07:00"));
-    @Column(name = "updateddate", nullable = false)
+    @Column(name = "updated_date", nullable = false)
     private LocalDate updatedDate = LocalDate.now(ZoneId.of("GMT+07:00"));
 
     @ManyToOne(cascade = CascadeType.ALL)

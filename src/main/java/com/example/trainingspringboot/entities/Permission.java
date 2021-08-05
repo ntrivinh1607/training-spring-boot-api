@@ -12,14 +12,16 @@ import java.util.Collection;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "permission")
 public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
-    @Column(unique = true, nullable = false)
+
+    @Column(unique = true, nullable = false, name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "permission", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Collection<RolePermission> rolePermissions = new ArrayList<>();
+    @ManyToMany(mappedBy = "mappedPermission")
+    private Collection<Role> mapRole = new ArrayList<>();
 }

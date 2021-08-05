@@ -1,6 +1,8 @@
 package com.example.trainingspringboot.services;
 
 import com.example.trainingspringboot.entities.Role;
+import com.example.trainingspringboot.model.request.RoleCreatingUpdatingRequest;
+import com.example.trainingspringboot.model.response.RoleResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,11 +10,11 @@ import java.util.List;
 @Service
 public interface RoleService {
 
-    List<Role> getListRole();
+    List<RoleResponse> getListRole();
 
-    Role saveRole(Role role);
+    RoleResponse createRole(RoleCreatingUpdatingRequest roleCreatingUpdatingRequest);
 
-    Role updateRole(Role role, Integer id);
+    RoleResponse updateRole(RoleCreatingUpdatingRequest roleCreatingUpdatingRequest, Integer id);
 
     void deleteRole(Integer id);
 }

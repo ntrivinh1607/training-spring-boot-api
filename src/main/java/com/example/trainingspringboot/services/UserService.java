@@ -1,20 +1,20 @@
 package com.example.trainingspringboot.services;
 
 import com.example.trainingspringboot.entities.User;
-import com.example.trainingspringboot.jwt.JwtResponse;
+import com.example.trainingspringboot.model.request.UserCreatingUpdatingRequest;
+import com.example.trainingspringboot.model.response.JwtResponse;
+import com.example.trainingspringboot.model.response.UserResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public interface UserService {
-    public List<User> getListUser();
-    public User createUser(User user);
-    public void deleteUser(Integer id);
+    List<UserResponse> getListUser();
+    UserResponse createUser(UserCreatingUpdatingRequest userCreatingRequest);
+    void deleteUser(Integer id);
 
-    User getUserById(int id);
-
-    User updateUser(User user, int id);
+    UserResponse updateUser(UserCreatingUpdatingRequest userUpdatingRequest, Integer id);
 
     JwtResponse userLogin(User user);
 }

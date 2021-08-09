@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.NoSuchElementException;
+import javax.validation.Valid;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/auth/signup")
-    public ResponseEntity<?> createUser(@RequestBody UserCreatingRequest userCreatingRequest) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserCreatingRequest userCreatingRequest) {
         return ResponseEntity.ok(userService.createUser(userCreatingRequest));
     }
 
@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody UserUpdatingRequest user, @PathVariable Integer id) {
+    public ResponseEntity<?> updateUser(@Valid @RequestBody UserUpdatingRequest user, @PathVariable Integer id) {
         return ResponseEntity.ok(userService.updateUser(user, id));
     }
 

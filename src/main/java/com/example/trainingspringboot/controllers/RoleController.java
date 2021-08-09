@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -28,12 +29,12 @@ public class RoleController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createRole(@RequestBody RoleCreatingRequest roleCreatingRequest) {
+    public ResponseEntity<?> createRole(@Valid @RequestBody RoleCreatingRequest roleCreatingRequest) {
         return ResponseEntity.ok(roleService.createRole(roleCreatingRequest));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateRole(@RequestBody RoleUpdatingRequest roleUpdatingRequest, @PathVariable int id) {
+    public ResponseEntity<?> updateRole(@Valid @RequestBody RoleUpdatingRequest roleUpdatingRequest, @PathVariable int id) {
         return ResponseEntity.ok(roleService.updateRole(roleUpdatingRequest, id));
     }
 

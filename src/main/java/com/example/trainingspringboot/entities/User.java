@@ -32,8 +32,7 @@ public class User {
     @Column(name = "updated_date", nullable = false)
     private LocalDate updatedDate = LocalDate.now(ZoneId.of("GMT+07:00"));
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JsonBackReference
+    @ManyToOne
     @JoinColumn(name = "role", referencedColumnName = "id")
     private Role role;
 }

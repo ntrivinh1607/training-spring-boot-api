@@ -1,10 +1,11 @@
 package com.example.trainingspringboot.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -23,8 +24,12 @@ public class Role {
     @Column(unique = true, nullable = false, name = "name")
     private String name;
 
+    @Column(name = "created_date", nullable = false)
+    private LocalDate createdDate = LocalDate.now(ZoneId.of("GMT+07:00"));
+    @Column(name = "updated_date", nullable = false)
+    private LocalDate updatedDate = LocalDate.now(ZoneId.of("GMT+07:00"));
+
     @OneToMany(mappedBy = "role")
-    @JsonManagedReference
     private Collection<User> users = new ArrayList<>();
 
     @ManyToMany

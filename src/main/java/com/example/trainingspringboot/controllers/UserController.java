@@ -1,7 +1,8 @@
 package com.example.trainingspringboot.controllers;
 
 import com.example.trainingspringboot.entities.User;
-import com.example.trainingspringboot.model.request.UserCreatingUpdatingRequest;
+import com.example.trainingspringboot.model.request.UserCreatingRequest;
+import com.example.trainingspringboot.model.request.UserUpdatingRequest;
 import com.example.trainingspringboot.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.NoSuchElementException;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api")
 public class UserController {
     @Autowired
@@ -18,16 +20,11 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<?> getUser() {
-        try{
-            return ResponseEntity.ok(userService.getListUser());
-        }
-        catch(NoSuchElementException e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(userService.getListUser());
     }
 
     @PostMapping("/auth/signup")
-    public ResponseEntity<?> createUser(@RequestBody UserCreatingUpdatingRequest userCreatingRequest) {
+    public ResponseEntity<?> createUser(@RequestBody UserCreatingRequest userCreatingRequest) {
         return ResponseEntity.ok(userService.createUser(userCreatingRequest));
     }
 
@@ -37,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody UserCreatingUpdatingRequest user, @PathVariable Integer id) {
+    public ResponseEntity<?> updateUser(@RequestBody UserUpdatingRequest user, @PathVariable Integer id) {
         return ResponseEntity.ok(userService.updateUser(user, id));
     }
 

@@ -1,7 +1,7 @@
 package com.example.trainingspringboot.controllers;
 
-import com.example.trainingspringboot.entities.Role;
-import com.example.trainingspringboot.model.request.RoleCreatingUpdatingRequest;
+import com.example.trainingspringboot.model.request.RoleCreatingRequest;
+import com.example.trainingspringboot.model.request.RoleUpdatingRequest;
 import com.example.trainingspringboot.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.NoSuchElementException;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/roles")
 public class RoleController {
     @Autowired
@@ -27,12 +28,12 @@ public class RoleController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createRole(@RequestBody RoleCreatingUpdatingRequest roleCreatingRequest) {
+    public ResponseEntity<?> createRole(@RequestBody RoleCreatingRequest roleCreatingRequest) {
         return ResponseEntity.ok(roleService.createRole(roleCreatingRequest));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateRole(@RequestBody RoleCreatingUpdatingRequest roleUpdatingRequest, @PathVariable int id) {
+    public ResponseEntity<?> updateRole(@RequestBody RoleUpdatingRequest roleUpdatingRequest, @PathVariable int id) {
         return ResponseEntity.ok(roleService.updateRole(roleUpdatingRequest, id));
     }
 

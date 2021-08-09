@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Integer> {
-    Optional<Role> findByName(String name);
+    List<Role> findAllByOrderByIdAsc();
     Role getRoleByName(String name);
 //    @Query("Select a from Role a left join RolePermission b on a.id=b.role.id where b.permission.id = ?1")
 //    List<Role> getListRoleByPermissionId(Integer permissionId);

@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleCreatingUpdatingRequest {
+public class RoleUpdatingRequest {
     private String name;
     private List<Integer> permissions;
 }

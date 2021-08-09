@@ -7,16 +7,16 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
-public class PermissionCreatingUpdatingRequest {
-    @NotNull(message = "Permission's name is required")
-    @NotEmpty(message = "Permission's name is required")
-    @Size(min = 4, max = 20, message = "Permission's name must between 2 and 20 characters")
+public class RoleCreatingRequest {
+    @NotNull(message = "Role's name is required")
+    @NotEmpty(message = "Role's name is required")
     private String name;
+
+    private List<Integer> permissions;
 }

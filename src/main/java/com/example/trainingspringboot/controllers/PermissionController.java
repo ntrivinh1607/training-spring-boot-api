@@ -1,7 +1,5 @@
 package com.example.trainingspringboot.controllers;
 
-
-import com.example.trainingspringboot.entities.Permission;
 import com.example.trainingspringboot.model.request.PermissionCreatingUpdatingRequest;
 import com.example.trainingspringboot.services.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.NoSuchElementException;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/permissions")
 public class PermissionController {
     @Autowired

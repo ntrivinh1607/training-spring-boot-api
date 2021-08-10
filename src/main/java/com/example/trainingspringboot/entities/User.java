@@ -32,7 +32,7 @@ public class User {
     @Column(name = "updated_date", nullable = false)
     private LocalDate updatedDate = LocalDate.now(ZoneId.of("GMT+07:00"));
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER) // for fetch data out session
     @JoinColumn(name = "role", referencedColumnName = "id")
     private Role role;
 }

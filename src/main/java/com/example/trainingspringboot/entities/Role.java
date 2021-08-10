@@ -32,7 +32,7 @@ public class Role {
     @OneToMany(mappedBy = "role")
     private Collection<User> users = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER) // for fetch data out session
     @JoinTable(
             name = "role_permission",
             joinColumns = @JoinColumn(name = "role_id"),

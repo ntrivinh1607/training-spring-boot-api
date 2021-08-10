@@ -1,11 +1,15 @@
 package com.example.trainingspringboot.userDetail;
 
+import com.example.trainingspringboot.entities.Permission;
 import com.example.trainingspringboot.entities.Role;
 import com.example.trainingspringboot.entities.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class MyUserPrincipal implements UserDetails {
     private User user;
@@ -16,7 +20,8 @@ public class MyUserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        System.out.println(getPermissions(user.getRole()).size());
+        return getGrantedAuthorities(getPermissions(user.getRole()));
     }
 
     @Override
@@ -57,5 +62,27 @@ public class MyUserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+
+    private List<String> getPermissions(Role role) {
+
+        List<String> permissions = new ArrayList<>();
+        permissions.add(role.getName());
+        List<Permission> collection = new ArrayList<>();
+        collection.addAll(role.getMappedPermission());
+        for (Permission item : collection) {
+            permissions.add(item.getName());
+        }
+        return permissions;
+    }
+
+
+    private List<GrantedAuthority> getGrantedAuthorities(List<String> permissions) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String permission : permissions) {
+            authorities.add(new SimpleGrantedAuthority(permission));
+        }
+        return authorities;
     }
 }

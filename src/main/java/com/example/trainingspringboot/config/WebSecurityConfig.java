@@ -6,6 +6,9 @@ import com.example.trainingspringboot.userDetail.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -15,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -52,18 +56,39 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    // for role _ hierarchy but not work yet.
+//    @Bean
+//    public RoleHierarchy roleHierarchy() {
+//        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+//        String hierarchy = "ADMIN > MANAGER \n MANAGER > SENIOR \n SENIOR > JUNIOR \n JUNIOR > FRESHER";
+//        roleHierarchy.setHierarchy(hierarchy);
+//        return roleHierarchy;
+//    }
+//
+//    @Bean
+//    public DefaultWebSecurityExpressionHandler webSecurityExpressionHandler() {
+//        DefaultWebSecurityExpressionHandler expressionHandler = new DefaultWebSecurityExpressionHandler();
+//        expressionHandler.setRoleHierarchy(roleHierarchy());
+//        return expressionHandler;
+//    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
+                // for signup, sign in
+                .antMatchers("/api/auth/*").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/roles").permitAll()
 
-                    .antMatchers("/api/auth/signin").permitAll()
-                    .antMatchers("/api/auth/signup").permitAll()
-                    .antMatchers("/api/roles").permitAll()
-                    //.anyRequest().permitAll();
-                    .anyRequest().authenticated();
+//                .antMatchers("/api/users/*").hasAnyAuthority("ADMIN", "MANAGER", "SENIOR")
+//                .antMatchers("/api/permissions/*").hasAnyAuthority("ADMIN", "MANAGER")
+
+                .antMatchers(HttpMethod.POST, "/api/*").hasAuthority("CREATE")
+                .antMatchers(HttpMethod.PUT, "/api/*/*").hasAuthority("UPDATE")
+                .antMatchers(HttpMethod.DELETE, "/api/*/*").hasAuthority("DELETE")
+                .anyRequest().authenticated();
 
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

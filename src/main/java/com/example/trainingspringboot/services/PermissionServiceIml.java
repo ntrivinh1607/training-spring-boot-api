@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Component
@@ -35,7 +36,15 @@ public class PermissionServiceIml implements PermissionService {
 
     @Override
     public void deletePermission(Integer id) {
-        repo.deleteById(id);
+        if(repo.findById(id).isPresent()){
+            if(repo.getById(id).getMapRole().size() == 0){
+                repo.deleteById(id);
+            }else{
+                throw new DataIntegrityViolationException("Permission in relationship with some role");
+            }
+        }else{
+            throw new NoSuchElementException("Not found permission");
+        }
     }
 
     @Override
@@ -43,7 +52,7 @@ public class PermissionServiceIml implements PermissionService {
         Permission newPermission = repo.getById(id);
         if(!permissionReq.getName().equals("") && permissionReq.getName()!=null){
             if(repo.findByName(permissionReq.getName()).isPresent() &&
-                    (repo.getPermissionByName(permissionReq.getName()) != repo.getById(id)))
+                    (repo.getPermissionByName(permissionReq.getName()) != newPermission))
             {
                 throw new DataIntegrityViolationException("Duplicate name");
             }

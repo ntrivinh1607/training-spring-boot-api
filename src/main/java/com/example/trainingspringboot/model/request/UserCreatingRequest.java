@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class UserCreatingRequest {
     @NotBlank(message = "Username is required")
-    @Size(min = 4, max = 20, message = "Usernamme must be between 4 and 20 characters")
+    @Size(min = 4, max = 20, message = "Username must be between 4 and 20 characters")
     private String username;
 
     @NotBlank

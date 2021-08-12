@@ -1,11 +1,13 @@
 package com.example.trainingspringboot.services;
 
 import com.example.trainingspringboot.entities.Role;
+import com.example.trainingspringboot.entities.User;
 import com.example.trainingspringboot.model.request.RoleCreatingRequest;
 import com.example.trainingspringboot.model.request.RoleUpdatingRequest;
 import com.example.trainingspringboot.model.response.RoleResponse;
 import com.example.trainingspringboot.repositories.PermissionRepository;
 import com.example.trainingspringboot.repositories.RoleRepository;
+import com.example.trainingspringboot.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,8 @@ public class RoleServiceIml implements RoleService {
     private RoleRepository repo;
     @Autowired
     private PermissionRepository perRepo;
+    @Autowired
+    private UserRepository userRepo;
 
     @Override
     public List<RoleResponse> getListRole() {
@@ -57,7 +61,7 @@ public class RoleServiceIml implements RoleService {
         if(roleUpdatingRequest.getName() != null && !roleUpdatingRequest.getName().equals(""))
         {
             if(repo.findByName(roleUpdatingRequest.getName()).isPresent() &&
-                     (repo.getRoleByName(roleUpdatingRequest.getName()) != repo.getById(id)))
+                     (repo.getRoleByName(roleUpdatingRequest.getName()) != newRole))
             {
                 throw new DataIntegrityViolationException("Duplicate role name");
             }
@@ -81,6 +85,9 @@ public class RoleServiceIml implements RoleService {
     @Override
     public void deleteRole(Integer id) {
         if(repo.findById(id).isPresent()){
+            if(repo.getById(id).getUsers().size() != 0){
+                throw new DataIntegrityViolationException("Some user have this role");
+            }
             repo.deleteById(id);
         } else {
             throw new NoSuchElementException("Not found role");

@@ -77,7 +77,8 @@ public class UserServiceIml implements UserService {
 
     @Override
     public UserResponse updateUser(UserUpdatingRequest userUpdatingRequest, Integer id) {
-        if(repo.findByUsername(userUpdatingRequest.getUsername()).isPresent()){
+        if(repo.findByUsername(userUpdatingRequest.getUsername()).isPresent() &&
+                (repo.getByUsername(userUpdatingRequest.getUsername()) != repo.getById(id))){
             throw new DataIntegrityViolationException("Duplicate username");
         }
         User oldUser = repo.getById(id);

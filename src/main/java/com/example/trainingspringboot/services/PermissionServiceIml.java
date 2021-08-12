@@ -42,7 +42,8 @@ public class PermissionServiceIml implements PermissionService {
     public PermissionResponse updatePermission(PermissionCreatingUpdatingRequest permissionReq, Integer id) {
         Permission newPermission = repo.getById(id);
         if(!permissionReq.getName().equals("") && permissionReq.getName()!=null){
-            if(repo.findByName(permissionReq.getName()).isPresent())
+            if(repo.findByName(permissionReq.getName()).isPresent() &&
+                    (repo.getPermissionByName(permissionReq.getName()) != repo.getById(id)))
             {
                 throw new DataIntegrityViolationException("Duplicate name");
             }

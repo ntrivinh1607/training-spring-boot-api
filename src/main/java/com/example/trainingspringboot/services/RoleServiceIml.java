@@ -56,9 +56,10 @@ public class RoleServiceIml implements RoleService {
 
         if(roleUpdatingRequest.getName() != null && !roleUpdatingRequest.getName().equals(""))
         {
-            if(repo.findByName(roleUpdatingRequest.getName()).isPresent())
+            if(repo.findByName(roleUpdatingRequest.getName()).isPresent() &&
+                     (repo.getRoleByName(roleUpdatingRequest.getName()) != repo.getById(id)))
             {
-                throw new DataIntegrityViolationException("Duplicate name");
+                throw new DataIntegrityViolationException("Duplicate role name");
             }
             newRole.setName(roleUpdatingRequest.getName());
         }

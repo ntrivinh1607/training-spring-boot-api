@@ -7,11 +7,13 @@ import com.example.trainingspringboot.model.response.RoleResponse;
 import com.example.trainingspringboot.repositories.PermissionRepository;
 import com.example.trainingspringboot.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,10 +31,20 @@ public class RoleServiceIml implements RoleService {
     @Override
     public RoleResponse createRole(RoleCreatingRequest roleCreatingRequest) {
         Role newRole = new Role();
+        if(repo.findByName(roleCreatingRequest.getName()).isPresent())
+        {
+            throw new DataIntegrityViolationException("Duplicate name");
+        }
         newRole.setName(roleCreatingRequest.getName());
         if(roleCreatingRequest.getPermissions() != null)
         {
-            newRole.setMappedPermission(roleCreatingRequest.getPermissions().stream().map(permission -> perRepo.findById(permission).get()).collect(Collectors.toList()));
+            newRole.setMappedPermission(roleCreatingRequest.getPermissions().stream().map(permission -> {
+                if(perRepo.findById(permission).isPresent()){
+                    return perRepo.findById(permission).get();
+                } else {
+                    throw new NoSuchElementException("Not found permission");
+                }
+            }).collect(Collectors.toList()));
         }
         repo.save(newRole);
         return new RoleResponse(newRole);
@@ -44,12 +56,21 @@ public class RoleServiceIml implements RoleService {
 
         if(roleUpdatingRequest.getName() != null && !roleUpdatingRequest.getName().equals(""))
         {
+            if(repo.findByName(roleUpdatingRequest.getName()).isPresent())
+            {
+                throw new DataIntegrityViolationException("Duplicate name");
+            }
             newRole.setName(roleUpdatingRequest.getName());
         }
         if(roleUpdatingRequest.getPermissions() != null)
         {
-            newRole.setMappedPermission(roleUpdatingRequest.getPermissions().stream().map(permission ->
-                    perRepo.findById(permission).get()).collect(Collectors.toList()));
+            newRole.setMappedPermission(roleUpdatingRequest.getPermissions().stream().map(permission -> {
+                if(perRepo.findById(permission).isPresent()){
+                    return perRepo.findById(permission).get();
+                } else {
+                    throw new NoSuchElementException("Not found permission");
+                }
+            }).collect(Collectors.toList()));
         }
         newRole.setUpdatedDate(LocalDate.now(ZoneId.of("GMT+07:00")));
         repo.save(newRole);
@@ -58,6 +79,10 @@ public class RoleServiceIml implements RoleService {
 
     @Override
     public void deleteRole(Integer id) {
-        repo.deleteById(id);
+        if(repo.findById(id).isPresent()){
+            repo.deleteById(id);
+        } else {
+            throw new NoSuchElementException("Not found role");
+        }
     }
 }

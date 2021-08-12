@@ -12,7 +12,6 @@ import javax.validation.Valid;
 import java.util.NoSuchElementException;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/roles")
 public class RoleController {
     @Autowired
@@ -20,12 +19,7 @@ public class RoleController {
 
     @GetMapping("")
     public ResponseEntity<?> getRole() {
-        try{
-            return ResponseEntity.ok(roleService.getListRole());
-        }
-        catch(NoSuchElementException e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(roleService.getListRole());
     }
 
     @PostMapping("")

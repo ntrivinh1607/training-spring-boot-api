@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Getter
@@ -14,14 +13,14 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserCreatingRequest {
-    @NotNull(message = "Username is required")
-    @NotEmpty(message = "Username is required")
+    @NotBlank(message = "Username is required")
+    @Size(min = 4, max = 20, message = "Usernamme must be between 4 and 20 characters")
     private String username;
 
+    @NotBlank
     private String role;
 
-    @NotNull(message = "Password is required")
-    @NotEmpty(message = "Password is required")
-    @Size(min = 2, max = 20, message = "Password must be between 2 and 20 characters")
+    @NotBlank(message = "Password is required")
+    @Size(min = 4, max = 20, message = "Password must be between 4 and 20 characters")
     private String password;
 }

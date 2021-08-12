@@ -11,7 +11,6 @@ import javax.validation.Valid;
 import java.util.NoSuchElementException;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/permissions")
 public class PermissionController {
     @Autowired
@@ -19,12 +18,7 @@ public class PermissionController {
 
     @GetMapping("")
     public ResponseEntity<?> getPermission() {
-        try{
-            return ResponseEntity.ok(permissionService.getListPermission());
-        }
-        catch(NoSuchElementException e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(permissionService.getListPermission());
     }
 
     @PostMapping("")

@@ -1,4 +1,4 @@
-package com.example.trainingspringboot.jwt;
+package com.example.trainingspringboot.filters;
 
 import java.io.IOException;
 
@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.example.trainingspringboot.jwt.JwtUtils;
 import com.example.trainingspringboot.userDetail.MyUserDetailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

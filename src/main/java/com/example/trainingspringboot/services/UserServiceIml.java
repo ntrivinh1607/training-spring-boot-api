@@ -11,6 +11,7 @@ import com.example.trainingspringboot.repositories.RoleRepository;
 import com.example.trainingspringboot.repositories.UserRepository;
 import com.example.trainingspringboot.userDetail.MyUserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Component
@@ -44,13 +46,20 @@ public class UserServiceIml implements UserService {
     @Override
     public UserResponse createUser(UserCreatingRequest userCreatingRequest)
     {
+        if(repo.findByUsername(userCreatingRequest.getUsername()).isPresent()){
+            throw new DataIntegrityViolationException("Duplicate username");
+        }
         User newUser = new User();
         newUser.setUsername(userCreatingRequest.getUsername());
         if(userCreatingRequest.getRole() != null && !userCreatingRequest.getRole().equals(""))
         {
-            newUser.setRole(roleRepo.getRoleByName(userCreatingRequest.getRole()));
+            if(roleRepo.findByName(userCreatingRequest.getRole()).isPresent()){
+                newUser.setRole(roleRepo.getRoleByName(userCreatingRequest.getRole()));
+            } else {
+                throw new NoSuchElementException("Not found role");
+            }
         } else {
-            newUser.setRole(roleRepo.getById(1));
+            throw new IllegalArgumentException("Invalid request");
         }
         newUser.setPassword(passwordEncoder.encode(userCreatingRequest.getPassword()));
         repo.save(newUser);
@@ -59,19 +68,23 @@ public class UserServiceIml implements UserService {
 
     @Override
     public void deleteUser(Integer id) {
-        repo.deleteById(id);
+        if(repo.findById(id).isPresent()){
+            repo.deleteById(id);
+        } else {
+            throw new NoSuchElementException("Not found user");
+        }
     }
 
     @Override
     public UserResponse updateUser(UserUpdatingRequest userUpdatingRequest, Integer id) {
+        if(repo.findByUsername(userUpdatingRequest.getUsername()).isPresent()){
+            throw new DataIntegrityViolationException("Duplicate username");
+        }
         User oldUser = repo.getById(id);
+        oldUser.setUsername(userUpdatingRequest.getUsername());
         if(userUpdatingRequest.getPassword() != null && !userUpdatingRequest.getPassword().equals(""))
         {
             oldUser.setPassword(passwordEncoder.encode(userUpdatingRequest.getPassword()));
-        }
-        if(userUpdatingRequest.getUsername() != null && !userUpdatingRequest.getUsername().equals(""))
-        {
-            oldUser.setUsername(userUpdatingRequest.getUsername());
         }
         if(userUpdatingRequest.getRole() != null && !userUpdatingRequest.getRole().equals(""))
         {

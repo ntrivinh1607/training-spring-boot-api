@@ -1,6 +1,6 @@
 package com.example.trainingspringboot.exception;
 
-import com.example.trainingspringboot.jwt.AuthJwtFilter;
+import com.example.trainingspringboot.filters.AuthJwtFilter;
 import javassist.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.NoSuchElementException;
 
 
@@ -21,12 +22,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(AuthJwtFilter.class);
 
     @ExceptionHandler(value = { IllegalArgumentException.class, IllegalStateException.class })
-    public ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
+    public ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
         String bodyOfResponse = "Invalid request";
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(value = { NotFoundException.class, NoSuchElementException.class })
+    @ExceptionHandler(value = { NotFoundException.class, NoSuchElementException.class, EntityNotFoundException.class })
     public ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
         String bodyOfResponse = "Not found object";
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.NOT_FOUND, request);

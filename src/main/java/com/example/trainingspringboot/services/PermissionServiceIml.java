@@ -5,6 +5,7 @@ import com.example.trainingspringboot.model.request.PermissionCreatingUpdatingRe
 import com.example.trainingspringboot.model.response.PermissionResponse;
 import com.example.trainingspringboot.repositories.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,6 +24,10 @@ public class PermissionServiceIml implements PermissionService {
     @Override
     public PermissionResponse createPermission(PermissionCreatingUpdatingRequest permissionReq) {
         Permission newPermission = new Permission();
+        if(repo.findByName(permissionReq.getName()).isPresent())
+        {
+            throw new DataIntegrityViolationException("Duplicate name");
+        }
         newPermission.setName(permissionReq.getName());
         repo.save(newPermission);
         return new PermissionResponse(newPermission);
@@ -37,6 +42,10 @@ public class PermissionServiceIml implements PermissionService {
     public PermissionResponse updatePermission(PermissionCreatingUpdatingRequest permissionReq, Integer id) {
         Permission newPermission = repo.getById(id);
         if(!permissionReq.getName().equals("") && permissionReq.getName()!=null){
+            if(repo.findByName(permissionReq.getName()).isPresent())
+            {
+                throw new DataIntegrityViolationException("Duplicate name");
+            }
             newPermission.setName(permissionReq.getName());
         }
         repo.save(newPermission);

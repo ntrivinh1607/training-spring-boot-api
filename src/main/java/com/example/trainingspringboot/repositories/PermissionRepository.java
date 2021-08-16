@@ -11,5 +11,4 @@ import java.util.Optional;
 public interface PermissionRepository extends JpaRepository<Permission, Integer> {
     List<Permission> findAllByOrderByIdAsc();
     Optional<Permission> findByName(String name);
-    Permission getPermissionByName(String name);
 }

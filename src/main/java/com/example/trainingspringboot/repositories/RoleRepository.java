@@ -12,6 +12,5 @@ import java.util.Optional;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Integer> {
     List<Role> findAllByOrderByIdAsc();
-    Role getRoleByName(String name);
     Optional<Role> findByName(String name);
 }

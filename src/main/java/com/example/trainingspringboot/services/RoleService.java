@@ -12,6 +12,8 @@ public interface RoleService {
 
     List<RoleResponse> getListRole();
 
+    List<String> getAnonymousListRole ();
+
     RoleResponse createRole(RoleCreatingRequest roleCreatingRequest);
 
     RoleResponse updateRole(RoleUpdatingRequest roleUpdatingRequest, Integer id);

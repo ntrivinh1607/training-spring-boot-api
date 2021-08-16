@@ -19,10 +19,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -53,8 +55,10 @@ public class UserServiceIml implements UserService {
         newUser.setUsername(userCreatingRequest.getUsername());
         if(userCreatingRequest.getRole() != null && !userCreatingRequest.getRole().equals(""))
         {
-            if(roleRepo.findByName(userCreatingRequest.getRole()).isPresent()){
-                newUser.setRole(roleRepo.getRoleByName(userCreatingRequest.getRole()));
+            Optional<Role> roleFindFromRequest = roleRepo.findByName(userCreatingRequest.getRole());
+            if(roleFindFromRequest.isPresent()){
+                Role newUserRole = roleFindFromRequest.get();
+                newUser.setRole(newUserRole);
             } else {
                 throw new NoSuchElementException("Not found role");
             }
@@ -76,10 +80,15 @@ public class UserServiceIml implements UserService {
     }
 
     @Override
-    public UserResponse updateUser(UserUpdatingRequest userUpdatingRequest, Integer id) {
+    public UserResponse updateUser(UserUpdatingRequest userUpdatingRequest, String currentUser, Integer id) {
         User oldUser = repo.getById(id);
-        if(repo.findByUsername(userUpdatingRequest.getUsername()).isPresent() &&
-                (repo.getByUsername(userUpdatingRequest.getUsername()) != oldUser)){
+        Optional<User> userFindByRequest = repo.findByUsername(userUpdatingRequest.getUsername());
+        // check if update current signined user
+        if(oldUser.getUsername().equals(currentUser)){
+            throw new IllegalArgumentException("Can't update current user");
+        }
+
+        if(userFindByRequest.isPresent() && (userFindByRequest.get() != oldUser)){
             throw new DataIntegrityViolationException("Duplicate username");
         }
         oldUser.setUsername(userUpdatingRequest.getUsername());
@@ -89,7 +98,13 @@ public class UserServiceIml implements UserService {
         }
         if(userUpdatingRequest.getRole() != null && !userUpdatingRequest.getRole().equals(""))
         {
-            oldUser.setRole(roleRepo.getRoleByName(userUpdatingRequest.getRole()));
+            Optional<Role> roleFindByUserRequest = roleRepo.findByName(userUpdatingRequest.getRole());
+            if(roleFindByUserRequest.isPresent()){
+                oldUser.setRole(roleFindByUserRequest.get());
+            }
+            else{
+                throw new NoSuchElementException("Not found role");
+            }
         }
         oldUser.setUpdatedDate(LocalDate.now(ZoneId.of("GMT+07:00")));
         repo.save(oldUser);

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -51,8 +52,9 @@ public class PermissionServiceIml implements PermissionService {
     public PermissionResponse updatePermission(PermissionCreatingUpdatingRequest permissionReq, Integer id) {
         Permission newPermission = repo.getById(id);
         if(!permissionReq.getName().equals("") && permissionReq.getName()!=null){
-            if(repo.findByName(permissionReq.getName()).isPresent() &&
-                    (repo.getPermissionByName(permissionReq.getName()) != newPermission))
+            Optional<Permission> permissionFindByRequest = repo.findByName(permissionReq.getName());
+            if(permissionFindByRequest.isPresent() &&
+                    (permissionFindByRequest.get() != newPermission))
             {
                 throw new DataIntegrityViolationException("Duplicate name");
             }

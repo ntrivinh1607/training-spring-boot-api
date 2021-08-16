@@ -15,7 +15,7 @@ public interface UserService {
     UserResponse createUser(UserCreatingRequest userCreatingRequest);
     void deleteUser(Integer id);
 
-    UserResponse updateUser(UserUpdatingRequest userUpdatingRequest, Integer id);
+    UserResponse updateUser(UserUpdatingRequest userUpdatingRequest, String currentUser, Integer id);
 
     JwtResponse userLogin(User user);
 }

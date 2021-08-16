@@ -1,7 +1,7 @@
 package com.example.trainingspringboot.services;
 
+import com.example.trainingspringboot.entities.Permission;
 import com.example.trainingspringboot.entities.Role;
-import com.example.trainingspringboot.entities.User;
 import com.example.trainingspringboot.model.request.RoleCreatingRequest;
 import com.example.trainingspringboot.model.request.RoleUpdatingRequest;
 import com.example.trainingspringboot.model.response.RoleResponse;
@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,6 +34,11 @@ public class RoleServiceIml implements RoleService {
     }
 
     @Override
+    public List<String> getAnonymousListRole() {
+        return repo.findAllByOrderByIdAsc().stream().map(role-> role.getName()).collect(Collectors.toList());
+    }
+
+    @Override
     public RoleResponse createRole(RoleCreatingRequest roleCreatingRequest) {
         Role newRole = new Role();
         if(repo.findByName(roleCreatingRequest.getName()).isPresent())
@@ -43,8 +49,9 @@ public class RoleServiceIml implements RoleService {
         if(roleCreatingRequest.getPermissions() != null)
         {
             newRole.setMappedPermission(roleCreatingRequest.getPermissions().stream().map(permission -> {
-                if(perRepo.findById(permission).isPresent()){
-                    return perRepo.findById(permission).get();
+                Optional<Permission> permissionFindFromRequest = perRepo.findById(permission);
+                if(permissionFindFromRequest.isPresent()){
+                    return permissionFindFromRequest.get();
                 } else {
                     throw new NoSuchElementException("Not found permission");
                 }
@@ -60,8 +67,8 @@ public class RoleServiceIml implements RoleService {
 
         if(roleUpdatingRequest.getName() != null && !roleUpdatingRequest.getName().equals(""))
         {
-            if(repo.findByName(roleUpdatingRequest.getName()).isPresent() &&
-                     (repo.getRoleByName(roleUpdatingRequest.getName()) != newRole))
+            Optional<Role> roleFindFromRequest = repo.findByName(roleUpdatingRequest.getName());
+            if(roleFindFromRequest.isPresent() && (roleFindFromRequest.get() != newRole))
             {
                 throw new DataIntegrityViolationException("Duplicate role name");
             }
@@ -70,8 +77,9 @@ public class RoleServiceIml implements RoleService {
         if(roleUpdatingRequest.getPermissions() != null)
         {
             newRole.setMappedPermission(roleUpdatingRequest.getPermissions().stream().map(permission -> {
-                if(perRepo.findById(permission).isPresent()){
-                    return perRepo.findById(permission).get();
+                Optional<Permission> permissionFindFromRequest = perRepo.findById(permission);
+                if(permissionFindFromRequest.isPresent()){
+                    return permissionFindFromRequest.get();
                 } else {
                     throw new NoSuchElementException("Not found permission");
                 }

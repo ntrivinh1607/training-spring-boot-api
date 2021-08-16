@@ -22,6 +22,11 @@ public class RoleController {
         return ResponseEntity.ok(roleService.getListRole());
     }
 
+    @GetMapping("/anonymous-list")
+    public ResponseEntity<?> getAnonymousListRole() {
+        return ResponseEntity.ok(roleService.getAnonymousListRole());
+    }
+
     @PostMapping("")
     public ResponseEntity<?> createRole(@Valid @RequestBody RoleCreatingRequest roleCreatingRequest) {
         return ResponseEntity.ok(roleService.createRole(roleCreatingRequest));

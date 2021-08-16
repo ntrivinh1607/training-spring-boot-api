@@ -92,6 +92,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/*").hasAuthority("CREATE")
                 .antMatchers(HttpMethod.PUT, "/api/*/*").hasAuthority("UPDATE")
                 .antMatchers(HttpMethod.DELETE, "/api/*/*").hasAuthority("DELETE")
+
+                .antMatchers(HttpMethod.GET,"/api/messages/*").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/messages").permitAll()
                 .anyRequest().authenticated();
 
 

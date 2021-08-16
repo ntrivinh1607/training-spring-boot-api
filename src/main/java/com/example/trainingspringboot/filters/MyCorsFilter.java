@@ -1,6 +1,5 @@
 package com.example.trainingspringboot.filters;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;

@@ -13,7 +13,7 @@ import java.util.List;
 public interface UserService {
     List<UserResponse> getListUser();
     UserResponse createUser(UserCreatingRequest userCreatingRequest);
-    void deleteUser(Integer id);
+    void deleteUser(Integer id, String currentUser);
 
     UserResponse updateUser(UserUpdatingRequest userUpdatingRequest, String currentUser, Integer id);
 

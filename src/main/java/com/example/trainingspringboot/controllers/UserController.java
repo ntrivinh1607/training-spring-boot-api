@@ -43,7 +43,9 @@ public class UserController {
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable int id) {
-        userService.deleteUser(id);
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String currentUser = userDetails.getUsername();
+        userService.deleteUser(id, currentUser);
         return ResponseEntity.ok("Delete Success");
     }
 }

@@ -71,8 +71,13 @@ public class UserServiceIml implements UserService {
     }
 
     @Override
-    public void deleteUser(Integer id) {
-        if(repo.findById(id).isPresent()){
+    public void deleteUser(Integer id, String currentUser) {
+        Optional<User> userGetById = repo.findById(id);
+        if(userGetById.isPresent()){
+            if(userGetById.get().getUsername().equals(currentUser))
+            {
+                throw new IllegalArgumentException("Cannot delete current signined user");
+            }
             repo.deleteById(id);
         } else {
             throw new NoSuchElementException("Not found user");

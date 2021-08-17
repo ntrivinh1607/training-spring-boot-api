@@ -20,6 +20,5 @@ public class RabbitMQSenderIml implements RabbitMQSender{
     @Override
     public void send(MessageRequest messageRequest) {
         myRabbitTemplate.convertAndSend(exchange, routingkey, messageRequest);
-        System.out.println("Send msg = " + messageRequest);
     }
 }

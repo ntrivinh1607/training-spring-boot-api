@@ -84,7 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // for signup, sign in
                 .antMatchers("/api/auth/*").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/roles/anonymous-list").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/roles/get-all-name").permitAll()
 
 //                .antMatchers("/api/users/*").hasAnyAuthority("ADMIN", "MANAGER", "SENIOR")
 //                .antMatchers("/api/permissions/*").hasAnyAuthority("ADMIN", "MANAGER")

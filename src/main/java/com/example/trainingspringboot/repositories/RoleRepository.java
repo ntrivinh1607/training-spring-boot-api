@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface RoleRepository extends JpaRepository<Role, Integer> {
     List<Role> findAllByOrderByIdAsc();
     Optional<Role> findByName(String name);
+    List<Role> findAllByMappedPermissionContains(Permission permission);
 }

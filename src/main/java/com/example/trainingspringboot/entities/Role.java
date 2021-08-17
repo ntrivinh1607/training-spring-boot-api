@@ -29,8 +29,6 @@ public class Role {
     @Column(name = "updated_date", nullable = false)
     private LocalDate updatedDate = LocalDate.now(ZoneId.of("GMT+07:00"));
 
-    @OneToMany(mappedBy = "role")
-    private Collection<User> users = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER) // for fetch data out session
     @JoinTable(

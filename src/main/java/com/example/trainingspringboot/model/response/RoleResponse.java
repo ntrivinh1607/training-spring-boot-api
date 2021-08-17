@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class RoleResponse {
     private Integer id;
     private String name;
-    private List<String> users;
     private List<PermissionResponse> permissions;
     private LocalDate updated_date;
     private LocalDate created_date;
@@ -26,7 +25,6 @@ public class RoleResponse {
     public RoleResponse(Role role) {
         this.id = role.getId();
         this.name = role.getName();
-        this.users = role.getUsers().stream().map(user -> user.getUsername()).collect(Collectors.toList());
         this.permissions = role.getMappedPermission().stream().map(permission -> new PermissionResponse(permission)).collect(Collectors.toList());
         this.updated_date = role.getUpdatedDate();
         this.created_date = role.getCreatedDate();

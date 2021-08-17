@@ -34,7 +34,7 @@ public class RoleServiceIml implements RoleService {
     }
 
     @Override
-    public List<String> getAnonymousListRole() {
+    public List<String> getAllName() {
         return repo.findAllByOrderByIdAsc().stream().map(role-> role.getName()).collect(Collectors.toList());
     }
 
@@ -63,12 +63,16 @@ public class RoleServiceIml implements RoleService {
 
     @Override
     public RoleResponse updateRole(RoleUpdatingRequest roleUpdatingRequest, Integer id) {
-        Role newRole = repo.getById(id);
+        Optional<Role> roleFindById = repo.findById(id);
+        if(!roleFindById.isPresent()){
+            throw new NoSuchElementException("Not found role");
+        }
+        Role newRole = roleFindById.get();
 
         if(roleUpdatingRequest.getName() != null && !roleUpdatingRequest.getName().equals(""))
         {
             Optional<Role> roleFindFromRequest = repo.findByName(roleUpdatingRequest.getName());
-            if(roleFindFromRequest.isPresent() && (roleFindFromRequest.get() != newRole))
+            if(roleFindFromRequest.isPresent() && (!roleFindFromRequest.get().getName().equals(newRole.getName())))
             {
                 throw new DataIntegrityViolationException("Duplicate role name");
             }
@@ -92,9 +96,10 @@ public class RoleServiceIml implements RoleService {
 
     @Override
     public void deleteRole(Integer id) {
-        if(repo.findById(id).isPresent()){
-            if(repo.getById(id).getUsers().size() != 0){
-                throw new DataIntegrityViolationException("Some user have this role");
+        Optional<Role> roleFindById = repo.findById(id);
+        if(roleFindById.isPresent()){
+            if(userRepo.findAllByRole(roleFindById.get()).size() != 0){
+                throw new IllegalArgumentException("Some user have this role");
             }
             repo.deleteById(id);
         } else {

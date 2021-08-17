@@ -4,6 +4,8 @@ import com.example.trainingspringboot.entities.Permission;
 import com.example.trainingspringboot.model.request.PermissionCreatingUpdatingRequest;
 import com.example.trainingspringboot.model.response.PermissionResponse;
 import com.example.trainingspringboot.repositories.PermissionRepository;
+import com.example.trainingspringboot.repositories.RoleRepository;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 public class PermissionServiceIml implements PermissionService {
     @Autowired
     private PermissionRepository repo;
+    @Autowired
+    private RoleRepository roleRepo;
 
     @Override
     public List<PermissionResponse> getListPermission() {
@@ -37,11 +41,12 @@ public class PermissionServiceIml implements PermissionService {
 
     @Override
     public void deletePermission(Integer id) {
-        if(repo.findById(id).isPresent()){
-            if(repo.getById(id).getMapRole().size() == 0){
+        Optional<Permission> permissionFindById = repo.findById(id);
+        if(permissionFindById.isPresent()){
+            if(roleRepo.findAllByMappedPermissionContains(permissionFindById.get()).size() == 0){
                 repo.deleteById(id);
             }else{
-                throw new DataIntegrityViolationException("Permission in relationship with some role");
+                throw new IllegalArgumentException("Permission in relationship with some role");
             }
         }else{
             throw new NoSuchElementException("Not found permission");
@@ -50,11 +55,15 @@ public class PermissionServiceIml implements PermissionService {
 
     @Override
     public PermissionResponse updatePermission(PermissionCreatingUpdatingRequest permissionReq, Integer id) {
-        Permission newPermission = repo.getById(id);
+        Optional<Permission> permissionFindById = repo.findById(id);
+        if(!permissionFindById.isPresent()){
+            throw new NoSuchElementException("Not found object");
+        }
+        Permission newPermission = permissionFindById.get();
         if(!permissionReq.getName().equals("") && permissionReq.getName()!=null){
             Optional<Permission> permissionFindByRequest = repo.findByName(permissionReq.getName());
             if(permissionFindByRequest.isPresent() &&
-                    (permissionFindByRequest.get() != newPermission))
+                    (!permissionFindByRequest.get().getName().equals(newPermission.getName())))
             {
                 throw new DataIntegrityViolationException("Duplicate name");
             }

@@ -12,7 +12,7 @@ public interface RoleService {
 
     List<RoleResponse> getListRole();
 
-    List<String> getAnonymousListRole ();
+    List<String> getAllName ();
 
     RoleResponse createRole(RoleCreatingRequest roleCreatingRequest);
 

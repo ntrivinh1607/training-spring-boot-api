@@ -19,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
@@ -72,9 +71,9 @@ public class UserServiceIml implements UserService {
 
     @Override
     public void deleteUser(Integer id, String currentUser) {
-        Optional<User> userGetById = repo.findById(id);
-        if(userGetById.isPresent()){
-            if(userGetById.get().getUsername().equals(currentUser))
+        Optional<User> userFindById = repo.findById(id);
+        if(userFindById.isPresent()){
+            if(userFindById.get().getUsername().equals(currentUser))
             {
                 throw new IllegalArgumentException("Cannot delete current signined user");
             }
@@ -86,17 +85,23 @@ public class UserServiceIml implements UserService {
 
     @Override
     public UserResponse updateUser(UserUpdatingRequest userUpdatingRequest, String currentUser, Integer id) {
-        User oldUser = repo.getById(id);
+        Optional<User> userFindById = repo.findById(id);
+        if(!userFindById.isPresent()){
+            throw new NoSuchElementException("Not found user");
+        }
+        User oldUser = userFindById.get();
+
         Optional<User> userFindByRequest = repo.findByUsername(userUpdatingRequest.getUsername());
         // check if update current signined user
         if(oldUser.getUsername().equals(currentUser)){
             throw new IllegalArgumentException("Can't update current user");
         }
 
-        if(userFindByRequest.isPresent() && (userFindByRequest.get() != oldUser)){
+        if(userFindByRequest.isPresent() && (!userFindByRequest.get().getUsername().equals(oldUser.getUsername()))){
             throw new DataIntegrityViolationException("Duplicate username");
         }
         oldUser.setUsername(userUpdatingRequest.getUsername());
+
         if(userUpdatingRequest.getPassword() != null && !userUpdatingRequest.getPassword().equals(""))
         {
             oldUser.setPassword(passwordEncoder.encode(userUpdatingRequest.getPassword()));

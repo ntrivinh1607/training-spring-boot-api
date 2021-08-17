@@ -21,7 +21,4 @@ public class Permission {
 
     @Column(unique = true, nullable = false, name = "name")
     private String name;
-
-    @ManyToMany(mappedBy = "mappedPermission")
-    private Collection<Role> mapRole = new ArrayList<>();
 }

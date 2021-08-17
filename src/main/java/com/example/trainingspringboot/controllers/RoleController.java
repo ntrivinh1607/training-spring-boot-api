@@ -22,9 +22,9 @@ public class RoleController {
         return ResponseEntity.ok(roleService.getListRole());
     }
 
-    @GetMapping("/anonymous-list")
-    public ResponseEntity<?> getAnonymousListRole() {
-        return ResponseEntity.ok(roleService.getAnonymousListRole());
+    @GetMapping("/get-all-name")
+    public ResponseEntity<?> getAllName() {
+        return ResponseEntity.ok(roleService.getAllName());
     }
 
     @PostMapping("")

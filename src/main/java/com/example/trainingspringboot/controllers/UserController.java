@@ -9,6 +9,7 @@ import com.example.trainingspringboot.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -29,15 +30,17 @@ public class UserController {
         return ResponseEntity.ok(userService.getListUser());
     }
 
+
     @PostMapping("/auth/signup")
+    public ResponseEntity<?> signupUser(@Valid @RequestBody UserCreatingRequest userCreatingRequest) {
+        rabbitMQSender.sendMessageForSignup(userCreatingRequest);
+        return ResponseEntity.ok(userService.createUser(userCreatingRequest));
+    }
+
+    @PostMapping("/users")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserCreatingRequest userCreatingRequest) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(userDetails == null)
-        {
-            rabbitMQSender.sendMessageForSignup(userCreatingRequest);
-        } else {
-            rabbitMQSender.sendMessageForCreateUser(userCreatingRequest, userDetails);
-        }
+        rabbitMQSender.sendMessageForCreateUser(userCreatingRequest, userDetails);
         return ResponseEntity.ok(userService.createUser(userCreatingRequest));
     }
 

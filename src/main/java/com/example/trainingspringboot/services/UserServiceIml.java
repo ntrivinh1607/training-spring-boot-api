@@ -10,6 +10,7 @@ import com.example.trainingspringboot.model.response.UserResponse;
 import com.example.trainingspringboot.repositories.RoleRepository;
 import com.example.trainingspringboot.repositories.UserRepository;
 import com.example.trainingspringboot.userDetail.MyUserPrincipal;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,17 +53,12 @@ public class UserServiceIml implements UserService {
         }
         User newUser = new User();
         newUser.setUsername(userCreatingRequest.getUsername());
-        if(userCreatingRequest.getRole() != null && !userCreatingRequest.getRole().equals(""))
-        {
-            Optional<Role> roleFindFromRequest = roleRepo.findByName(userCreatingRequest.getRole());
-            if(roleFindFromRequest.isPresent()){
-                Role newUserRole = roleFindFromRequest.get();
-                newUser.setRole(newUserRole);
-            } else {
-                throw new NoSuchElementException("Not found role");
-            }
+        Optional<Role> roleFindFromRequest = roleRepo.findByName(userCreatingRequest.getRole());
+        if(roleFindFromRequest.isPresent()){
+            Role newUserRole = roleFindFromRequest.get();
+            newUser.setRole(newUserRole);
         } else {
-            throw new IllegalArgumentException("Invalid request");
+            throw new NoSuchElementException("Not found role");
         }
         newUser.setPassword(passwordEncoder.encode(userCreatingRequest.getPassword()));
         repo.save(newUser);
@@ -102,11 +98,11 @@ public class UserServiceIml implements UserService {
         }
         oldUser.setUsername(userUpdatingRequest.getUsername());
 
-        if(userUpdatingRequest.getPassword() != null && !userUpdatingRequest.getPassword().equals(""))
+        if(StringUtils.isNotBlank(userUpdatingRequest.getPassword()))
         {
             oldUser.setPassword(passwordEncoder.encode(userUpdatingRequest.getPassword()));
         }
-        if(userUpdatingRequest.getRole() != null && !userUpdatingRequest.getRole().equals(""))
+        if(StringUtils.isNotBlank(userUpdatingRequest.getRole()))
         {
             Optional<Role> roleFindByUserRequest = roleRepo.findByName(userUpdatingRequest.getRole());
             if(roleFindByUserRequest.isPresent()){
@@ -116,7 +112,6 @@ public class UserServiceIml implements UserService {
                 throw new NoSuchElementException("Not found role");
             }
         }
-        oldUser.setUpdatedDate(LocalDate.now(ZoneId.of("GMT+07:00")));
         repo.save(oldUser);
         return new UserResponse(oldUser);
     }

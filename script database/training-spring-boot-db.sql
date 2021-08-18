@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 17, 2021 at 12:03 PM
+-- Generation Time: Aug 18, 2021 at 09:26 AM
 -- Server version: 10.4.20-MariaDB
 -- PHP Version: 8.0.8
 
@@ -36,22 +36,38 @@ CREATE TABLE `hibernate_sequence` (
 --
 
 INSERT INTO `hibernate_sequence` (`next_val`) VALUES
-(15);
+(21);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `logs`
+-- Table structure for table `log_messages`
 --
 
-CREATE TABLE `logs` (
-  `APPLICATION` varchar(20) DEFAULT NULL,
+CREATE TABLE `log_messages` (
   `id` int(11) NOT NULL,
-  `LOG_DATE` date NOT NULL DEFAULT current_timestamp(),
-  `LOGGER` varchar(250) NOT NULL,
-  `LOG_LEVEL` varchar(10) NOT NULL,
-  `MESSAGE` varchar(4000) DEFAULT NULL
+  `content` varchar(2000) DEFAULT NULL,
+  `username` varchar(32) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
+  `updated_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `log_messages`
+--
+
+INSERT INTO `log_messages` (`id`, `content`, `username`, `user_id`, `created_date`, `updated_date`, `created_by`, `updated_by`) VALUES
+(1, 'Update User', 'node999', 10, NULL, '2021-08-18 14:11:21', NULL, 1),
+(2, 'Update User', 'asdasdasd', 18, NULL, '2021-08-18 14:11:51', NULL, 1),
+(3, 'Update User', 'node999', 10, NULL, '2021-08-18 14:18:18', NULL, 1),
+(4, 'Create User', 'asdasdasd', NULL, '2021-08-18 14:19:35', NULL, 1, NULL),
+(5, 'Update User', 'asdasdasd', 19, NULL, '2021-08-18 14:19:43', NULL, 1),
+(6, 'Create User', 'asdasd', NULL, '2021-08-18 14:21:18', NULL, 1, NULL),
+(7, 'Update User', 'asdasd', 20, NULL, '2021-08-18 14:21:22', NULL, 1),
+(8, 'Delete User', 'asdasd', 20, NULL, '2021-08-18 14:21:24', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -92,10 +108,10 @@ CREATE TABLE `role` (
 --
 
 INSERT INTO `role` (`id`, `created_date`, `name`, `updated_date`) VALUES
-(1, '2021-08-07', 'FRESHER', '2021-08-17'),
-(2, '2021-08-09', 'JUNIOR', '2021-08-12'),
-(3, '2021-08-10', 'SENIOR', '2021-08-16'),
-(4, '2021-08-10', 'MANAGER', '2021-08-17');
+(1, '2021-08-07', 'FRESHER', '2021-08-18'),
+(2, '2021-08-09', 'JUNIOR', '2021-08-18'),
+(3, '2021-08-10', 'SENIOR', '2021-08-18'),
+(4, '2021-08-10', 'MANAGER', '2021-08-18');
 
 -- --------------------------------------------------------
 
@@ -115,14 +131,14 @@ CREATE TABLE `role_permission` (
 INSERT INTO `role_permission` (`role_id`, `permission_id`) VALUES
 (2, 1),
 (2, 2),
-(3, 1),
-(3, 2),
-(3, 3),
 (4, 1),
 (4, 2),
 (4, 3),
 (4, 4),
-(1, 1);
+(1, 1),
+(3, 1),
+(3, 2),
+(3, 3);
 
 -- --------------------------------------------------------
 
@@ -147,17 +163,16 @@ INSERT INTO `user` (`id`, `created_date`, `password`, `updated_date`, `username`
 (1, '2021-08-06', '$2a$12$5j2iLFyZyo47tzcrgNiedO4wxNjGPaeIIBOoD575yrICb5cHaDhYy', '2021-08-12', 'node', 4),
 (2, '2021-08-08', '$2a$10$Yw30Z0bYnpDuOeLt1x4aPOgDmgrJtPgjo2sB2TQei6SaI0.c0povu', '2021-08-16', 'NODETHUHAIii', 2),
 (6, '2021-08-10', '$2a$10$.OML8MAsL74bTIfQd..TZ.2Q1IEPmnVE4etEIvouyQlzqAvYn1ADe', '2021-08-17', 'node5', 1),
-(10, '2021-08-16', '$2a$10$g2iOJYEZDwf4lIFjTSYUY.LtZ/hmF0WGjVx8.Mmi.pZrHNrRwONC6', '2021-08-17', 'node9', 2),
-(13, '2021-08-17', '$2a$10$l6kV9naRLGnlCgNKgEUdsefhxhmQQQKrhtz31qeyePQw1cGZEaI22', '2021-08-17', 'node15', 4);
+(10, '2021-08-16', '$2a$10$g2iOJYEZDwf4lIFjTSYUY.LtZ/hmF0WGjVx8.Mmi.pZrHNrRwONC6', '2021-08-18', 'node999', 3);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `logs`
+-- Indexes for table `log_messages`
 --
-ALTER TABLE `logs`
+ALTER TABLE `log_messages`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -194,16 +209,16 @@ ALTER TABLE `user`
 --
 
 --
--- AUTO_INCREMENT for table `logs`
+-- AUTO_INCREMENT for table `log_messages`
 --
-ALTER TABLE `logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `log_messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `permission`
 --
 ALTER TABLE `permission`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `role`

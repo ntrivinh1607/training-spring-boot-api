@@ -6,10 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -25,12 +28,17 @@ public class User {
 
     @Column(unique = true, nullable = false, name = "username")
     private String username;
+
     @Column(nullable = false, name = "password")
     private String password;
+
     @Column(name = "created_date", nullable = false)
-    private LocalDate createdDate = LocalDate.now(ZoneId.of("GMT+07:00"));
+    @CreationTimestamp
+    private Date createdDate;
+
     @Column(name = "updated_date", nullable = false)
-    private LocalDate updatedDate = LocalDate.now(ZoneId.of("GMT+07:00"));
+    @UpdateTimestamp
+    private Date updatedDate;
 
     @ManyToOne(fetch = FetchType.EAGER) // for fetch data out session
     @JoinColumn(name = "role", referencedColumnName = "id")

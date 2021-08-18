@@ -8,6 +8,7 @@ import com.example.trainingspringboot.model.response.RoleResponse;
 import com.example.trainingspringboot.repositories.PermissionRepository;
 import com.example.trainingspringboot.repositories.RoleRepository;
 import com.example.trainingspringboot.repositories.UserRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
@@ -69,7 +70,7 @@ public class RoleServiceIml implements RoleService {
         }
         Role newRole = roleFindById.get();
 
-        if(roleUpdatingRequest.getName() != null && !roleUpdatingRequest.getName().equals(""))
+        if(StringUtils.isNotBlank(roleUpdatingRequest.getName()))
         {
             Optional<Role> roleFindFromRequest = repo.findByName(roleUpdatingRequest.getName());
             if(roleFindFromRequest.isPresent() && (!roleFindFromRequest.get().getName().equals(newRole.getName())))
@@ -89,7 +90,6 @@ public class RoleServiceIml implements RoleService {
                 }
             }).collect(Collectors.toList()));
         }
-        newRole.setUpdatedDate(LocalDate.now(ZoneId.of("GMT+07:00")));
         repo.save(newRole);
         return new RoleResponse(newRole);
     }
@@ -98,7 +98,7 @@ public class RoleServiceIml implements RoleService {
     public void deleteRole(Integer id) {
         Optional<Role> roleFindById = repo.findById(id);
         if(roleFindById.isPresent()){
-            if(userRepo.findAllByRole(roleFindById.get()).size() != 0){
+            if(userRepo.countAllByRole(roleFindById.get()) != 0){
                 throw new IllegalArgumentException("Some user have this role");
             }
             repo.deleteById(id);

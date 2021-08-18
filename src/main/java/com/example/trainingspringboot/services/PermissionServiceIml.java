@@ -6,6 +6,7 @@ import com.example.trainingspringboot.model.response.PermissionResponse;
 import com.example.trainingspringboot.repositories.PermissionRepository;
 import com.example.trainingspringboot.repositories.RoleRepository;
 import javassist.NotFoundException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
@@ -43,7 +44,7 @@ public class PermissionServiceIml implements PermissionService {
     public void deletePermission(Integer id) {
         Optional<Permission> permissionFindById = repo.findById(id);
         if(permissionFindById.isPresent()){
-            if(roleRepo.findAllByMappedPermissionContains(permissionFindById.get()).size() == 0){
+            if(roleRepo.countByMappedPermissionContains(permissionFindById.get()) == 0){
                 repo.deleteById(id);
             }else{
                 throw new IllegalArgumentException("Permission in relationship with some role");
@@ -60,15 +61,13 @@ public class PermissionServiceIml implements PermissionService {
             throw new NoSuchElementException("Not found object");
         }
         Permission newPermission = permissionFindById.get();
-        if(!permissionReq.getName().equals("") && permissionReq.getName()!=null){
-            Optional<Permission> permissionFindByRequest = repo.findByName(permissionReq.getName());
-            if(permissionFindByRequest.isPresent() &&
-                    (!permissionFindByRequest.get().getName().equals(newPermission.getName())))
-            {
-                throw new DataIntegrityViolationException("Duplicate name");
-            }
-            newPermission.setName(permissionReq.getName());
+        Optional<Permission> permissionFindByRequest = repo.findByName(permissionReq.getName());
+        if(permissionFindByRequest.isPresent() &&
+                (!permissionFindByRequest.get().getName().equals(newPermission.getName())))
+        {
+            throw new DataIntegrityViolationException("Duplicate name");
         }
+        newPermission.setName(permissionReq.getName());
         repo.save(newPermission);
         return new PermissionResponse(newPermission);
     }

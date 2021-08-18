@@ -31,8 +31,13 @@ public class UserController {
 
     @PostMapping("/auth/signup")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserCreatingRequest userCreatingRequest) {
-        MessageRequest msg = new MessageRequest("Sign up", "User sign up service");
-        rabbitMQSender.send(msg);
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(userDetails == null)
+        {
+            rabbitMQSender.sendMessageForSignup(userCreatingRequest);
+        } else {
+            rabbitMQSender.sendMessageForCreateUser(userCreatingRequest, userDetails);
+        }
         return ResponseEntity.ok(userService.createUser(userCreatingRequest));
     }
 
@@ -43,18 +48,18 @@ public class UserController {
 
     @PutMapping("/users/{id}")
     public ResponseEntity<?> updateUser(@Valid @RequestBody UserUpdatingRequest user, @PathVariable Integer id) {
-        MessageRequest msg = new MessageRequest("Update user", "Update user in table users");
-        rabbitMQSender.send(msg);
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        rabbitMQSender.sendMessageForUpdateUser(user, userDetails, id);
+
         String currentUser = userDetails.getUsername();
         return ResponseEntity.ok(userService.updateUser(user, currentUser,id));
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id) {
-        MessageRequest msg = new MessageRequest("Delete user", "Delete user in table users");
-        rabbitMQSender.send(msg);
+    public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        rabbitMQSender.sendMessageForDeleteUser(userDetails, id);
+
         String currentUser = userDetails.getUsername();
         userService.deleteUser(id, currentUser);
         return ResponseEntity.ok("Delete Success");

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -16,8 +17,8 @@ public class UserResponse {
     private Integer id;
     private String username;
     private String role;
-    private LocalDate updated_date;
-    private LocalDate created_date;
+    private Date updated_date;
+    private Date created_date;
 
     public UserResponse(User oldUser) {
         this.id = oldUser.getId();

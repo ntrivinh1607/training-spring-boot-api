@@ -2,12 +2,15 @@ package com.example.trainingspringboot.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -25,9 +28,12 @@ public class Role {
     private String name;
 
     @Column(name = "created_date", nullable = false)
-    private LocalDate createdDate = LocalDate.now(ZoneId.of("GMT+07:00"));
+    @CreationTimestamp
+    private Date createdDate;
+
     @Column(name = "updated_date", nullable = false)
-    private LocalDate updatedDate = LocalDate.now(ZoneId.of("GMT+07:00"));
+    @UpdateTimestamp
+    private Date updatedDate;
 
 
     @ManyToMany(fetch = FetchType.EAGER) // for fetch data out session

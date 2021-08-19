@@ -12,11 +12,13 @@ import com.example.trainingspringboot.repositories.UserRepository;
 import com.example.trainingspringboot.userDetail.MyUserPrincipal;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -39,14 +41,27 @@ public class UserServiceIml implements UserService {
     AuthenticationManager authenticationManager;
     @Autowired
     JwtUtils jwtUtils;
+    @Autowired
+    private RabbitMQSender rabbitMQSender;
 
+    @Value("${rabbitmq.message.content.update.user}")
+    private String contentUpdateUser;
+
+    @Value("${rabbitmq.message.content.signup.user}")
+    private String contentSignupUser;
+
+    @Value("${rabbitmq.message.content.create.user}")
+    private String contentCreateUser;
+
+    @Value("${rabbitmq.message.content.delete.user}")
+    private String contentDeleteUser;
     @Override
     public List<UserResponse> getListUser() {
         return repo.findAllByOrderByIdAsc().stream().map(user-> new UserResponse(user)).collect(Collectors.toList());
     }
 
     @Override
-    public UserResponse createUser(UserCreatingRequest userCreatingRequest)
+    public UserResponse createUser(UserCreatingRequest userCreatingRequest, String currentUser)
     {
         if(repo.findByUsername(userCreatingRequest.getUsername()).isPresent()){
             throw new DataIntegrityViolationException("Duplicate username");
@@ -62,6 +77,12 @@ public class UserServiceIml implements UserService {
         }
         newUser.setPassword(passwordEncoder.encode(userCreatingRequest.getPassword()));
         repo.save(newUser);
+
+        if(StringUtils.isNotBlank(currentUser)){
+            rabbitMQSender.sendMessage(contentCreateUser, newUser, currentUser);
+        } else {
+            rabbitMQSender.sendMessage(contentSignupUser, newUser, newUser.getUsername());
+        }
         return new UserResponse(newUser);
     }
 
@@ -73,6 +94,9 @@ public class UserServiceIml implements UserService {
             {
                 throw new IllegalArgumentException("Cannot delete current signined user");
             }
+            User userGetById = userFindById.get();
+
+            rabbitMQSender.sendMessage(contentDeleteUser, userGetById, currentUser);
             repo.deleteById(id);
         } else {
             throw new NoSuchElementException("Not found user");
@@ -113,6 +137,8 @@ public class UserServiceIml implements UserService {
             }
         }
         repo.save(oldUser);
+
+        rabbitMQSender.sendMessage(contentUpdateUser, oldUser, currentUser);
         return new UserResponse(oldUser);
     }
 

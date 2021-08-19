@@ -12,7 +12,9 @@ import java.util.List;
 @Service
 public interface UserService {
     List<UserResponse> getListUser();
-    UserResponse createUser(UserCreatingRequest userCreatingRequest);
+
+    UserResponse createUser(UserCreatingRequest userCreatingRequest, String currentUser);
+
     void deleteUser(Integer id, String currentUser);
 
     UserResponse updateUser(UserUpdatingRequest userUpdatingRequest, String currentUser, Integer id);

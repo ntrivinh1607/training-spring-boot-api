@@ -52,7 +52,6 @@ public class RabbitMQSenderIml implements RabbitMQSender{
             throw new NoSuchElementException("Not found username");
         }
         Integer userMakeRequestId = findUserMakeRequestByName.get().getId();
-        System.out.println(userMakeRequestId);
         if(messageContent.equals(contentUpdateUser) || messageContent.equals(contentDeleteUser)){
             messageRequest.setUpdatedBy(userMakeRequestId);
         }

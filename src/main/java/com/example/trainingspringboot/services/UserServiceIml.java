@@ -55,6 +55,7 @@ public class UserServiceIml implements UserService {
 
     @Value("${rabbitmq.message.content.delete.user}")
     private String contentDeleteUser;
+
     @Override
     public List<UserResponse> getListUser() {
         return repo.findAllByOrderByIdAsc().stream().map(user-> new UserResponse(user)).collect(Collectors.toList());

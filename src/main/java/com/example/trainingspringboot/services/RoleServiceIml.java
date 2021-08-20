@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -31,27 +29,25 @@ public class RoleServiceIml implements RoleService {
 
     @Override
     public List<RoleResponse> getListRole() {
-        return repo.findAllByOrderByIdAsc().stream().map(role-> new RoleResponse(role)).collect(Collectors.toList());
+        return repo.findAllByOrderByIdAsc().stream().map(role -> new RoleResponse(role)).collect(Collectors.toList());
     }
 
     @Override
     public List<String> getAllName() {
-        return repo.findAllByOrderByIdAsc().stream().map(role-> role.getName()).collect(Collectors.toList());
+        return repo.findAllByOrderByIdAsc().stream().map(role -> role.getName()).collect(Collectors.toList());
     }
 
     @Override
     public RoleResponse createRole(RoleCreatingRequest roleCreatingRequest) {
         Role newRole = new Role();
-        if(repo.findByName(roleCreatingRequest.getName()).isPresent())
-        {
+        if (repo.findByName(roleCreatingRequest.getName()).isPresent()) {
             throw new DataIntegrityViolationException("Duplicate name");
         }
         newRole.setName(roleCreatingRequest.getName());
-        if(roleCreatingRequest.getPermissions() != null)
-        {
+        if (roleCreatingRequest.getPermissions() != null) {
             newRole.setMappedPermission(roleCreatingRequest.getPermissions().stream().map(permission -> {
                 Optional<Permission> permissionFindFromRequest = perRepo.findById(permission);
-                if(permissionFindFromRequest.isPresent()){
+                if (permissionFindFromRequest.isPresent()) {
                     return permissionFindFromRequest.get();
                 } else {
                     throw new NoSuchElementException("Not found permission");
@@ -65,25 +61,22 @@ public class RoleServiceIml implements RoleService {
     @Override
     public RoleResponse updateRole(RoleUpdatingRequest roleUpdatingRequest, Integer id) {
         Optional<Role> roleFindById = repo.findById(id);
-        if(!roleFindById.isPresent()){
+        if (!roleFindById.isPresent()) {
             throw new NoSuchElementException("Not found role");
         }
         Role newRole = roleFindById.get();
 
-        if(StringUtils.isNotBlank(roleUpdatingRequest.getName()))
-        {
+        if (StringUtils.isNotBlank(roleUpdatingRequest.getName())) {
             Optional<Role> roleFindFromRequest = repo.findByName(roleUpdatingRequest.getName());
-            if(roleFindFromRequest.isPresent() && (!roleFindFromRequest.get().getName().equals(newRole.getName())))
-            {
+            if (roleFindFromRequest.isPresent() && (!roleFindFromRequest.get().getName().equals(newRole.getName()))) {
                 throw new DataIntegrityViolationException("Duplicate role name");
             }
             newRole.setName(roleUpdatingRequest.getName());
         }
-        if(roleUpdatingRequest.getPermissions() != null)
-        {
+        if (roleUpdatingRequest.getPermissions() != null) {
             newRole.setMappedPermission(roleUpdatingRequest.getPermissions().stream().map(permission -> {
                 Optional<Permission> permissionFindFromRequest = perRepo.findById(permission);
-                if(permissionFindFromRequest.isPresent()){
+                if (permissionFindFromRequest.isPresent()) {
                     return permissionFindFromRequest.get();
                 } else {
                     throw new NoSuchElementException("Not found permission");
@@ -97,8 +90,8 @@ public class RoleServiceIml implements RoleService {
     @Override
     public void deleteRole(Integer id) {
         Optional<Role> roleFindById = repo.findById(id);
-        if(roleFindById.isPresent()){
-            if(userRepo.countAllByRole(roleFindById.get()) != 0){
+        if (roleFindById.isPresent()) {
+            if (userRepo.countAllByRole(roleFindById.get()) != 0) {
                 throw new IllegalArgumentException("Some user have this role");
             }
             repo.deleteById(id);

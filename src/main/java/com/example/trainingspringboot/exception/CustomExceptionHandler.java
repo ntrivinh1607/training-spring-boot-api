@@ -22,13 +22,13 @@ import java.util.NoSuchElementException;
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(AuthJwtFilter.class);
 
-    @ExceptionHandler(value = { IllegalArgumentException.class, IllegalStateException.class })
+    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
         String bodyOfResponse = "Invalid request";
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(value = { NotFoundException.class, NoSuchElementException.class, EntityNotFoundException.class })
+    @ExceptionHandler(value = {NotFoundException.class, NoSuchElementException.class, EntityNotFoundException.class})
     public ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
         String bodyOfResponse = "Not found object";
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.NOT_FOUND, request);

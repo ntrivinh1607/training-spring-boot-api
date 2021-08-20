@@ -84,7 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // for signup, sign in
                 .antMatchers("/api/auth/*").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/roles/get-all-name").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/roles/get-all-name").permitAll()
 
 //                .antMatchers("/api/users/*").hasAnyAuthority("ADMIN", "MANAGER", "SENIOR")
 //                .antMatchers("/api/permissions/*").hasAnyAuthority("ADMIN", "MANAGER")
@@ -93,8 +93,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/api/*/*").hasAuthority("UPDATE")
                 .antMatchers(HttpMethod.DELETE, "/api/*/*").hasAuthority("DELETE")
 
-                .antMatchers(HttpMethod.GET,"/api/messages/*").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/messages").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/messages/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/messages").permitAll()
                 .anyRequest().authenticated();
 
 

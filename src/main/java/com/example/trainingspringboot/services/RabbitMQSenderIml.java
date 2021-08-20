@@ -13,7 +13,7 @@ import java.util.Optional;
 
 
 @Component
-public class RabbitMQSenderIml implements RabbitMQSender{
+public class RabbitMQSenderIml implements RabbitMQSender {
     @Autowired
     private AmqpTemplate myRabbitTemplate;
 
@@ -48,14 +48,14 @@ public class RabbitMQSenderIml implements RabbitMQSender{
         messageRequest.setUpdatedDate(userAddOrUpdateFromRequest.getUpdatedDate());
 
         Optional<User> findUserMakeRequestByName = userRepository.findByUsername(userMakeRequest);
-        if(!findUserMakeRequestByName.isPresent()){
+        if (!findUserMakeRequestByName.isPresent()) {
             throw new NoSuchElementException("Not found username");
         }
         Integer userMakeRequestId = findUserMakeRequestByName.get().getId();
-        if(messageContent.equals(contentUpdateUser) || messageContent.equals(contentDeleteUser)){
+        if (messageContent.equals(contentUpdateUser) || messageContent.equals(contentDeleteUser)) {
             messageRequest.setUpdatedBy(userMakeRequestId);
         }
-        if(messageContent.equals(contentCreateUser) || messageContent.equals(contentSignupUser)){
+        if (messageContent.equals(contentCreateUser) || messageContent.equals(contentSignupUser)) {
             messageRequest.setCreatedBy(userMakeRequestId);
         }
         myRabbitTemplate.convertAndSend(exchange, routingkey, messageRequest);

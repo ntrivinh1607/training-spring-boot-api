@@ -36,9 +36,11 @@ public class MyUserPrincipal implements UserDetails {
     public User getUser() {
         return user;
     }
+
     public Role getRole() {
         return user.getRole();
     }
+
     public Integer getId() {
         return user.getId();
     }
